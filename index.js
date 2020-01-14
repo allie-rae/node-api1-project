@@ -32,10 +32,10 @@ server.get('/api/users/:id', (req, res) => {
 
     Users.findById(id)
         .then(user => {
-            !user ? 
-            res.status(404).json({ errorMessage: "The user with the specified ID does not exist." })
-            :
-            res.status(200).json(user);
+            !user ?
+                res.status(404).json({ errorMessage: "The user with the specified ID does not exist." })
+                :
+                res.status(200).json(user);
         })
         .catch(err => {
             console.log(err);
@@ -84,20 +84,27 @@ server.put('/api/users/:id', (req, res) => {
     const id = req.params.id;
     const changes = req.body;
 
-    !changes.name || !changes.bio ? 
-    res.status(400).json({ errorMessage: "Please provide a name and bio for the user." })
-    :
-    Users.update(id, changes)
-    .then(count => {
-        count < 1 ?
-        res.status(404).json({ errorMessage: "The user with the specified ID does not exist." })
+    !changes.name || !changes.bio ?
+        res.status(400).json({ errorMessage: "Please provide a name and bio for the user." })
         :
-        res.status(200).json({ message: "User successfully updated." });
-    })
-    .catch(err => {
-        console.log(err);
-        res.status(500).json({ errorMessage: "The user information could not be modified." })
-    });
+        Users.update(id, changes)
+            .then(count => {
+                count < 1 ?
+                    res.status(404).json({ errorMessage: "The user with the specified ID does not exist." })
+                    :
+                    // res.status(200).json({ message: "User was successfully updated."});
+                    Users.findById(id)
+                        .then(user => {
+                            res.status(200).json(user);
+                        })
+                        .catch(err => {
+                            console.log(err)
+                        })
+            })
+            .catch(err => {
+                console.log(err);
+                res.status(500).json({ errorMessage: "The user information could not be modified." })
+            });
 });
 
 const port = 8000;
