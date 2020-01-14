@@ -1,25 +1,23 @@
 // implement your API here
-const express = require('express')
+const express = require('express');
 
-const Users = require('./data/db.js') // Our Users database library
+const Users = require('./data/db.js'); // Our Users database library
 
 const server = express();
 
 // middleware: teaches express new things
-
 server.use(express.json()); // needed to parse JSON
 
 // routes or endpoints
 
 // GET to "/"
 server.get('/', function (request, response) {
-    response.send({ hello: "Web 25!" });
+    response.send("<h1>Hello from Allie's Assignment!</h1>");
 });
 
 
 // See a list of Users -- working 
 server.get('/api/users', (req, res) => {
-    console.log(res);
     // read the data from the database (Users)
     Users.find() // returns a promise
         .then(users => {
@@ -56,15 +54,20 @@ server.post('/api/users', (req, res) => {
 server.delete('/api/users/:id', (req, res) => {
     const id = req.params.id;
     Users.remove(id)
-    .then(result => {
-        res.status(204).end();
-        // res.status(200).json(result);
-    })
-    .catch(err => {
-        console.log(err);
-        // Handle the error
-        res.status(404).json({ errorMessage: "The user with the specified ID does not exist." })
-    })
+        .then(result => {
+            console.log(result)
+            // res.status(204).end();
+            result < 1 ?
+                res.status(404).json({ errorMessage: "The user with the specified ID does not exist." })
+                :
+                res.status(200).json(result);
+
+        })
+        .catch(err => {
+            console.log(err);
+            // Handle the error
+            res.status(404).json({ errorMessage: "The user with the specified ID does not exist." })
+        })
 })
 
 // Update a User
