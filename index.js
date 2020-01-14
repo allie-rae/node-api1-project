@@ -1,8 +1,6 @@
 // implement your API here
 const express = require('express');
-
 const Users = require('./data/db.js'); // Our Users database library
-
 const server = express();
 
 // middleware: teaches express new things
@@ -15,7 +13,6 @@ server.get('/', function (request, response) {
     response.send("<h1>Hello from Allie's Assignment!</h1>");
 });
 
-
 // See a list of Users -- working 
 server.get('/api/users', (req, res) => {
     // read the data from the database (Users)
@@ -25,23 +22,21 @@ server.get('/api/users', (req, res) => {
         })
         .catch(err => {
             console.log(err);
-            // Handle the error
             res.status(500).json({ errorMessage: "The users information could not be retrieved." })
         })
 })
 
+// See a specific user
 
-// Create a User -- working but not finished
-server.post('/api/users', (req, res) => {
-    const userData = req.body;
-    const name = req.body.name;
-    const bio = req.body.bio;
-    !name || !bio ?
-    res.status(400).json({ errorMessage: "Please provide a name and bio for the user." })
-    :
-    Users.insert(userData)
+server.get('/api/users/:id', (req, res) => {
+    let id = req.params.id;
+    
+    Users.findById(id)
         .then(user => {
-            res.status(201).json(user);
+            !user ? 
+            res.status(404).json({ errorMessage: "The user with the specified ID does not exist." })
+            :
+            res.status(200).json(user);
         })
         .catch(err => {
             console.log(err);
@@ -49,26 +44,41 @@ server.post('/api/users', (req, res) => {
         })
 })
 
-// Delete a User -- working & done
+// Create a User -- working but not finished
+server.post('/api/users', (req, res) => {
+    const userData = req.body;
+    const name = req.body.name;
+    const bio = req.body.bio;
+    !name || !bio ?
+        res.status(400).json({ errorMessage: "Please provide a name and bio for the user." })
+        :
+        Users.insert(userData)
+            .then(user => {
+                res.status(201).json(user);
+            })
+            .catch(err => {
+                console.log(err);
+                res.status(500).json({ errorMessage: "The user information could not be retrieved." })
+            })
+})
 
+// Delete a User -- working & done
 server.delete('/api/users/:id', (req, res) => {
     const id = req.params.id;
     Users.remove(id)
         .then(result => {
-            console.log(result)
             // res.status(204).end();
             result < 1 ?
                 res.status(404).json({ errorMessage: "The user with the specified ID does not exist." })
                 :
                 res.status(200).json(result);
-
         })
         .catch(err => {
             console.log(err);
             // Handle the error
             res.status(500).json({ errorMessage: "The user could not be removed." })
-        })
-})
+        });
+});
 
 // Update a User
 
