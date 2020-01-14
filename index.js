@@ -34,22 +34,22 @@ server.get('/api/users', (req, res) => {
 // Create a User -- working but not finished
 server.post('/api/users', (req, res) => {
     const userData = req.body;
-    console.log(userData)
     const name = req.body.name;
     const bio = req.body.bio;
-    // never trust the client, always validate the data
+    !name || !bio ?
+    res.status(400).json({ errorMessage: "Please provide a name and bio for the user." })
+    :
     Users.insert(userData)
         .then(user => {
             res.status(201).json(user);
         })
         .catch(err => {
             console.log(err);
-            // Handle the error
-            res.status(400).json({ errorMessage: "Please provide a name and bio for the user." })
+            res.status(500).json({ errorMessage: "The user information could not be retrieved." })
         })
 })
 
-// Delete a User -- working
+// Delete a User -- working & done
 
 server.delete('/api/users/:id', (req, res) => {
     const id = req.params.id;
@@ -66,7 +66,7 @@ server.delete('/api/users/:id', (req, res) => {
         .catch(err => {
             console.log(err);
             // Handle the error
-            res.status(404).json({ errorMessage: "The user with the specified ID does not exist." })
+            res.status(500).json({ errorMessage: "The user could not be removed." })
         })
 })
 
