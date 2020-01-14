@@ -13,7 +13,7 @@ server.get('/', function (request, response) {
     response.send("<h1>Hello from Allie's Assignment!</h1>");
 });
 
-// See a list of Users -- working 
+// See a list of Users -- finished 
 server.get('/api/users', (req, res) => {
     // read the data from the database (Users)
     Users.find() // returns a promise
@@ -26,11 +26,10 @@ server.get('/api/users', (req, res) => {
         })
 })
 
-// See a specific user
-
+// See a specific user - finished 
 server.get('/api/users/:id', (req, res) => {
     let id = req.params.id;
-    
+
     Users.findById(id)
         .then(user => {
             !user ? 
@@ -44,7 +43,7 @@ server.get('/api/users/:id', (req, res) => {
         })
 })
 
-// Create a User -- working but not finished
+// Create a User -- finished
 server.post('/api/users', (req, res) => {
     const userData = req.body;
     const name = req.body.name;
@@ -62,7 +61,7 @@ server.post('/api/users', (req, res) => {
             })
 })
 
-// Delete a User -- working & done
+// Delete a User -- finished
 server.delete('/api/users/:id', (req, res) => {
     const id = req.params.id;
     Users.remove(id)
@@ -80,7 +79,26 @@ server.delete('/api/users/:id', (req, res) => {
         });
 });
 
-// Update a User
+// Update a User - 
+server.put('/api/users/:id', (req, res) => {
+    const id = req.params.id;
+    const changes = req.body;
+
+    !changes.name || !changes.bio ? 
+    res.status(400).json({ errorMessage: "Please provide a name and bio for the user." })
+    :
+    Users.update(id, changes)
+    .then(count => {
+        count < 1 ?
+        res.status(404).json({ errorMessage: "The user with the specified ID does not exist." })
+        :
+        res.status(200).json({ message: "User successfully updated." });
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({ errorMessage: "The user information could not be modified." })
+    });
+});
 
 const port = 8000;
 
