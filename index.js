@@ -15,8 +15,7 @@ server.get('/', function (request, response) {
 
 // See a list of Users -- finished 
 server.get('/api/users', (req, res) => {
-    // read the data from the database (Users)
-    Users.find() // returns a promise
+    Users.find() 
         .then(users => {
             res.status(200).json(users);
         })
@@ -26,10 +25,9 @@ server.get('/api/users', (req, res) => {
         })
 })
 
-// See a specific user - finished 
+// See a specific user -- finished 
 server.get('/api/users/:id', (req, res) => {
     let id = req.params.id;
-
     Users.findById(id)
         .then(user => {
             !user ?
@@ -66,7 +64,6 @@ server.delete('/api/users/:id', (req, res) => {
     const id = req.params.id;
     Users.remove(id)
         .then(result => {
-            // res.status(204).end();
             result < 1 ?
                 res.status(404).json({ errorMessage: "The user with the specified ID does not exist." })
                 :
@@ -74,12 +71,11 @@ server.delete('/api/users/:id', (req, res) => {
         })
         .catch(err => {
             console.log(err);
-            // Handle the error
             res.status(500).json({ errorMessage: "The user could not be removed." })
         });
 });
 
-// Update a User - 
+// Update a User -- finished
 server.put('/api/users/:id', (req, res) => {
     const id = req.params.id;
     const changes = req.body;
@@ -92,7 +88,6 @@ server.put('/api/users/:id', (req, res) => {
                 count < 1 ?
                     res.status(404).json({ errorMessage: "The user with the specified ID does not exist." })
                     :
-                    // res.status(200).json({ message: "User was successfully updated."});
                     Users.findById(id)
                         .then(user => {
                             res.status(200).json(user);
